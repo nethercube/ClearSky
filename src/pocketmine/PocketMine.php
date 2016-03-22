@@ -5,7 +5,7 @@ namespace {
 		foreach(func_get_args() as $var){
 			switch(true){
 				case is_array($var):
-					echo str_repeat("  ", $cnt) . "array(" . count($var) . ") {" . PHP_EOL;
+					echo str_repeat("  ", $cnt) . "array(" . count($var) . "){" . PHP_EOL;
 					foreach($var as $key => $value){
 						echo str_repeat("  ", $cnt + 1) . "[" . (is_integer($key) ? $key : '"' . $key . '"') . "]=>" . PHP_EOL;
 						++$cnt;
@@ -165,7 +165,7 @@ namespace pocketmine {
 				 * Get the timezone offset
 				 *
 				 * Sample Output var_dump
-				 * array(3) {
+				 * array(3){
 				 *	  [0] =>
 				 *	  string(7) "Caption"
 				 *	  [1] =>
@@ -361,7 +361,7 @@ namespace pocketmine {
 	}
 
 	if(php_sapi_name() !== "cli"){
-		$logger->critical("You must run PocketMine-MP using the CLI.");
+		$logger->critical("You must run ClearSky using the CLI.");
 		++$errors;
 	}
 
@@ -384,10 +384,10 @@ namespace pocketmine {
 	}
 	if(extension_loaded("pocketmine")){
 		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
-			$logger->critical("You have the native PocketMine extension, but your version is lower than 0.0.1.");
+			$logger->critical("You have the native ClearSky extension, but your version is lower than 0.0.1.");
 			++$errors;
 		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-			$logger->critical("You have the native PocketMine extension, but your version is higher than 0.0.4.");
+			$logger->critical("You have the native ClearSky extension, but your version is higher than 0.0.4.");
 			++$errors;
 		}
 	}
@@ -439,7 +439,7 @@ namespace pocketmine {
 	}
 
 	if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
+		$logger->warning("Non-packaged ClearSky installation detected, do not use on production.");
 	}
 
 	ThreadManager::init();

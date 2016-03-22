@@ -39,7 +39,7 @@ memory:
  continuous-trigger-rate: 30
 
  garbage-collection:
-  period: 36000
+  period: 18000
   collect-async-worker: true
   low-memory-trigger: true
   
@@ -64,7 +64,7 @@ network:
  upnp-forwarding: false
 
 debug:
- level: 1
+ level: 10
  allow-xdebug: false
  commands: true
 
@@ -93,7 +93,7 @@ chunk-sending:
  cache-chunks: true
  
 chunk-ticking:
- per-tick: 1
+ per-tick: 0
  tick-radius: 2
  light-updates: true
  clear-tick-list: true
@@ -123,10 +123,10 @@ auto-updater:
  on-update:
   warn-console: true
   warn-ops: true
- preferred-channel: ClearSky
+ preferred-channel: Stable #Stable or DEV
  host: jenkins.clearskyteam.org
 
-version: 15
+version: 17
 
 auto-report:
  enabled: false

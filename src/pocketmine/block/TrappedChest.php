@@ -28,6 +28,7 @@ class TrappedChest extends Transparent implements Redstone{
 		}
 		return $this->boundingBox;
 	}
+	
 	public function canBeActivated(){
 		return true;
 	}
@@ -44,12 +45,13 @@ class TrappedChest extends Transparent implements Redstone{
 		return Tool::TYPE_AXE;
 	}
 	
-	public function onUpdate($type){
+	/*public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_SCHEDULED){
 			$this->BroadcastRedstoneUpdate(Level::REDSTONE_UPDATE_BREAK,Block::REDSTONESOURCEPOWER);
 		}
 		return;
-	}
+	}*/
+	
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x + 0.0625,
@@ -156,10 +158,6 @@ class TrappedChest extends Transparent implements Redstone{
 				if($chest->namedtag->Lock->getValue() !== $item->getCustomName()){
 					return true;
 				}
-			}
-
-			if($player->isCreative()){
-				return true;
 			}
 			
 				$player->addWindow($chest->getInventory());

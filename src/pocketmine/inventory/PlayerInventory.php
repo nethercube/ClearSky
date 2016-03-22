@@ -20,7 +20,7 @@ class PlayerInventory extends BaseInventory{
 	protected $hotbar;
 
 	public function __construct(Human $player){
-		$this->hotbar = array_fill(0, $this->getHotbarSize(), 0);
+		$this->hotbar = array_fill(0, $this->getHotbarSize(), -1);
 		parent::__construct($player, InventoryType::get(InventoryType::PLAYER));
 	}
 
@@ -414,17 +414,15 @@ class PlayerInventory extends BaseInventory{
 		if($target instanceof Player){
 			$target = [$target];
 		}
-
 		$pk = new ContainerSetSlotPacket();
-		$pk->hotbar = [];
-		for($i = 0; $i < $this->getHotbarSize(); ++$i){
-			$index = $this->getHotbarSlotIndex($i);
-			$pk->hotbar[] = $index <= -1 ? -1 : $index + $this->getHotbarSize();
-		}
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
-
+		$pk->hotbar = [];
 		foreach($target as $player){
+			for($i = 0; $i < $this->getHotbarSize(); ++$i){
+				$index = $this->getHotbarSlotIndex($i);
+				$pk->hotbar[] = $index <= -1 ? -1 : $index + $this->getHotbarSize();
+			}
 			if($player === $this->getHolder()){
 				/** @var Player $player */
 				$pk->windowid = 0;

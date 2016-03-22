@@ -220,8 +220,7 @@ class Item{
 	const DRAGON_EGG = 122;
 	const REDSTONE_LAMP = 123;
 	const LIT_REDSTONE_LAMP = 124;
-	// const DOUBLE_WOODEN_SLAB = 125;
-	// const WOODEN_SLAB = 126;
+	const DROPPER = 125;
 	const ACTIVATOR_RAIL = 126;
 	const COCOA_POD = 127;
 	const COCOA_BEANS = 127;
@@ -312,6 +311,7 @@ class Item{
 	const ACACIA_DOOR_BLOCK = 196;
 	const DARK_OAK_DOOR_BLOCK = 197;
 	const GRASS_PATH = 198;
+	const ITEM_FRAME_BLOCK = 199;
 	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
 	const STONECUTTER = 245;
@@ -1161,7 +1161,7 @@ class Item{
 		Item::addCreativeItem(Item::get(Item::REPEATER));
 		Item::addCreativeItem(Item::get(Item::COMPARATOR));
 		Item::addCreativeItem(Item::get(Item::DISPENSER, 3));
-		// Item::addCreativeItem(Item::get(Item::DROPPER));
+		Item::addCreativeItem(Item::get(Item::DROPPER, 3));
 		Item::addCreativeItem(Item::get(Item::HOPPER));
 		Item::addCreativeItem(Item::get(Item::SNOWBALL));
 	}
@@ -1245,10 +1245,11 @@ class Item{
 		Item::addCreativeItem(Item::get(Item::SPIDER_EYE, 0));
 		Item::addCreativeItem(Item::get(Item::FERMENTED_SPIDER_EYE, 0));
 		Item::addCreativeItem(Item::get(Item::EXP_BOTTLE, 0));
-		// enchanted books
-		//TODO: Enchantments
+		// TODO: Enchantments
 		for($i = 0; $i < 79; $i++){
-			Item::addCreativeItem(Item::get(Item::ENCHANTED_BOOK, $i));
+			$item = Item::get(Item::ENCHANTED_BOOK)->addEnchantment(Enchantment::getEnchantment($i));
+			if($item !== null) Item::addCreativeItem();
+			else Item::addCreativeItem(Item::get(Item::ENCHANTED_BOOK));
 		}
 		Item::addCreativeItem(Item::get(Item::DYE, 0));
 		Item::addCreativeItem(Item::get(Item::DYE, 8));
@@ -1266,9 +1267,7 @@ class Item{
 		Item::addCreativeItem(Item::get(Item::DYE, 10));
 		Item::addCreativeItem(Item::get(Item::DYE, 2));
 		Item::addCreativeItem(Item::get(Item::DYE, 6));
-		
 		Item::addCreativeItem(Item::get(Item::GLASS_BOTTLE, 0));
-		
 		self::addCreativeItem(Item::get(Item::POTION, Potion::WATER_BOTTLE));
 		self::addCreativeItem(Item::get(Item::POTION, Potion::AWKWARD));
 		self::addCreativeItem(Item::get(Item::POTION, Potion::THICK));
@@ -1746,7 +1745,7 @@ class Item{
 	final public function canBePlaced(){
 		return $this->block !== null and $this->block->canBePlaced();
 	}
-	final public function isPlaceable() {
+	final public function isPlaceable(){
 		$this->canBePlaced();
 	}
 
@@ -1836,6 +1835,10 @@ class Item{
 		return false;
 	}
 
+	public function isArmor(){
+		return false;
+	}
+
 	final public function __toString(){
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x".bin2hex($this->getCompoundTag()) : "");
 	}
@@ -1847,18 +1850,17 @@ class Item{
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
-
+	
 	public final function equals(Item $item, $checkDamage = true, $checkCompound = true){
 		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCompound === false or $this->getCompoundTag() === $item->getCompoundTag());
 	}
-
-	public final function deepEquals(Item $item, $checkDamage = true, $checkCompound = true){
-		if($item->equals($item, $checkDamage, $checkCompound)){
+	
+	public final function deepEquals(Item $item, $checkDamage = true, $checkCompound = false){
+		if($this->equals($item, $checkDamage, $checkCompound)){
 			return true;
-		}elseif($item->hasCompoundTag() or $this->hasCompoundTag()){
+		}elseif($item->hasCompoundTag() and $this->hasCompoundTag()){
 			return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
 		}
-
 		return false;
 	}
 
