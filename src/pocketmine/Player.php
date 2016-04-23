@@ -112,6 +112,7 @@ use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
+use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -384,11 +385,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false;
 	}
 	
-	public function getCurrentExperience(){
+	private function getCurrentExperience(){
 		return $this->expcurrent;
 	}
 	
-	public function setCurrentExperience($exp){
+	private function setCurrentExperience($exp){
 		$this->expcurrent = $exp;
 	}
 	
@@ -2170,6 +2171,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		switch($packet::NETWORK_ID){
+			case ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET:
+				$tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z));
+				if($tile instanceof ItemFrame){
+					if($tile->getItem()->getId() !== Item::AIR){
+						if((mt_rand(0, 10) / 10) <= $tile->getItemDropChance()){
+							$this->level->dropItem($tile, $tile->getItem());
+						}
+						$tile->setItem(Item::get(Item::AIR));
+						$tile->setItemRotation(0);
+					}
+				}
+				break;
 			case ProtocolInfo::REQUEST_CHUNK_RADIUS_PACKET:
 				if($this->spawned){
 					$this->viewDistance = $packet->radius ** 2;
@@ -2781,11 +2794,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($this->spawned === false or $this->blocked === true or !$this->isAlive()){
 					break;
 				}
-				$item = $this->inventory->contains($packet->item) ? $packet->item : $this->inventory->getItemInHand();
+				if(!$this->inventory->contains($packet->item)) {
+					$this->inventory->sendContents($this); //Refresh the inventory to do useless stuff
+					break;
+				}
+				$slot = $this->inventory->first($packet->item);
+				if($slot == -1){break;}
+				$item = $this->inventory->getItem($slot);
 				$ev = new PlayerDropItemEvent($this, $item);
 				$this->server->getPluginManager()->callEvent($ev);
 				if($ev->isCancelled()){
-					$this->inventory->sendContents($this);
+					$this->inventory->sendSlot($slot, $this);
 					break;
 				}
 
@@ -2841,7 +2860,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case ProtocolInfo::CRAFTING_EVENT_PACKET:
 				if($this->spawned === false or !$this->isAlive()){
 					break;
-				}elseif(!isset($this->windowIndex[$packet->windowId])){// need fix for windows 10 edition
+				}elseif(!isset($this->windowIndex[$packet->windowId])){
 					$this->inventory->sendContents($this);
 					$pk = new ContainerClosePacket();
 					$pk->windowid = $packet->windowId;
@@ -2853,6 +2872,25 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->inventory->sendContents($this);
 					break;
 				}
+				$win10 = false;
+				if(empty($packet->input)){ // win10
+					if($recipe instanceof ShapedRecipe){
+						$win10 = true;
+						$ingredients2 = array();
+						for($x = 0; $x <= $recipe->getWidth(); $x++){
+							for($y = 0; $y <= $recipe->getHeight(); $y++){
+								$ingredients2[] = $recipe->getIngredient($x, $y);
+							}
+						}
+						$recipe = (new ShapedRecipe($packet->output[0], "abc", "def", "ghi"))->setIngredient("a", $ingredients2[0])->setIngredient("b", $ingredients2[1])->setIngredient("c", $ingredients2[2])->setIngredient("d", $ingredients2[3])->setIngredient("e", $ingredients2[4])->setIngredient("f", $ingredients2[5])->setIngredient("g", $ingredients2[6])->setIngredient("h", $ingredients2[7])->setIngredient("i", $ingredients2[8]);
+					}
+					elseif($recipe instanceof ShapelessRecipe){
+						$recipe2 = new ShapelessRecipe($packet->output[0]);
+						foreach($recipe2->getIngredientList() as $content){
+							if($this->getInventory()->contains($content)) $packet->input[] = $content;
+						}
+					}
+				}
 				/** @var Item $item */
 				foreach($packet->input as $i => $item){
 					if($item->getDamage() === -1 or $item->getDamage() === 0xffff){
@@ -2863,7 +2901,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}
 				}
 				$canCraft = true;
-				if($recipe instanceof ShapedRecipe){
+				if($recipe instanceof ShapedRecipe && !$win10){
 					for($x = 0;$x < 3 and $canCraft;++$x){
 						for($y = 0;$y < 3;++$y){
 							$item = $packet->input[$y * 3 + $x];
@@ -2961,7 +2999,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$extraItem = $this->inventory->addItem($recipe->getResult());
 				if(count($extraItem) > 0){
 					foreach($extraItem as $item){
-						$this->level->dropItem($this, $item);
+					#	$this->level->dropItem($this, $item);
 					}
 				}
 				switch($recipe->getResult()->getId()){

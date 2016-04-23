@@ -12,20 +12,21 @@ use pocketmine\nbt\tag\String;
 use pocketmine\Player;
 use pocketmine\tile\Dropper as DropperTile;
 use pocketmine\tile\Tile;
+use pocketmine\inventory\DropperInventory;
 
 class Dropper extends Solid implements RedstoneConsumer{
-	protected $id = self::DISPENSER;
+	protected $id = self::DROPPER;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName(){
-		return "Dispenser";
+		return "Dropper";
 	}
 
 	public function canBeActivated(){
-		return true;
+		return false;
 	}
 
 	public function getHardness(){
@@ -37,7 +38,7 @@ class Dropper extends Solid implements RedstoneConsumer{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$dispenser = null;
+		$dropper = null;
 		if($player instanceof Player){
 			$pitch = $player->getPitch();
 			if(abs($pitch) >= 45){
@@ -79,21 +80,20 @@ class Dropper extends Solid implements RedstoneConsumer{
 		return true;
 	}
 
-	public function activate(){
+	/*public function activate(){
 		$tile = $this->getLevel()->getTile($this);
 		if($tile instanceof DropperTile){
 			$tile->activate();
 		}
-	}
+	}*/
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
 			$t = $this->getLevel()->getTile($this);
-			$dispenser = null;
-			if($t instanceof DropperTile){
-				$dispenser = $t;
-			}
-			else{
+			$dropper = null;
+			/*if($t instanceof DropperTile){
+				$dropper = $t;
+			}else{*/
 				$nbt = new Compound("", [
 					new Enum("Items", []),
 					new String("id", Tile::DROPPER),
@@ -102,10 +102,17 @@ class Dropper extends Solid implements RedstoneConsumer{
 					new Int("z", $this->z)
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$dispenser = Tile::createTile(Tile::DROPPER, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+				$dropper = Tile::createTile(Tile::DROPPER, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+			#}
+
+			if(isset($dropper->namedtag->Lock) and $dropper->namedtag->Lock instanceof String){
+				if($dropper->namedtag->Lock->getValue() !== $item->getCustomName()){
+					return true;
+				}
 			}
-			$player->addWindow($dispenser->getInventory());
+			$player->addWindow($dropper->getInventory());
 		}
+
 		return true;
 	}
 
