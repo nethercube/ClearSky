@@ -138,6 +138,7 @@ use pocketmine\entity\MinecartHopper;
 use pocketmine\entity\MinecartTNT;
 use pocketmine\entity\TripoidCamera;
 use pocketmine\entity\ThrownEnderPearl;
+use pocketmine\entity\ai\AIManager;
 
 /**
  * The class that manages everything
@@ -2735,6 +2736,10 @@ class Server{
 		Tile::registerTile(FlowerPot::class);
 		Tile::registerTile(Sign::class);
 		Tile::registerTile(EnchantTable::class);
+	}
+
+	private function registerAIs(){
+		AIManager::registerAI(SnowGolem::class, SnowGolemAI::class);
 	}
 
 }

@@ -1,7 +1,6 @@
 <?php
 namespace pocketmine\level\ai;
 
-use pocketmine\Server;
 use pocketmine\level\Level;
 
 use pocketmine\entity\Entity;
@@ -35,14 +34,14 @@ class AI{
 	public function tickMobs(){
 		//print_r($this->getLevel()->getChunks());
 		foreach($this->mobs as $mobId => $mobType){
-			$this->getServer()->getScheduler()->scheduleAsyncTask(new MoveCalculaterTask($this->getBlocksAround(), $this->levelId, $mobId, $mobType));
+			$this->getServer()->getScheduler()->scheduleAsyncTask(new MoveCalculaterTask($this->level, $this->levelId, $mobId, $mobType));
 		}
 		//echo "Level ".$this->getLevel()->getName()." Receive Tick Request\n";
 	}
 	
 	public function moveCalculationCallback($result){
 		$entity = $this->getServer()->getLevel($this->levelId)->getEntity($result['id']);
-		$this->setPosition($entity->temporalVector->setComponents($result['x'], $result['y'], $result['z']));
+		$entity->setPositionAndRotation($entity->temporalVector->setComponents($result['x'], $result['y'], $result['z']), $result['yaw'], $result['pitch']);
 	}
 	
 }
