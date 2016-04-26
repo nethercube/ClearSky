@@ -53,12 +53,11 @@ class SpawnEgg extends Item{
 
 		$entity = Entity::createEntity($this->meta, $chunk, $nbt);
 		if($entity instanceof Entity){
-			//$entity->setDataProperty(15, Entity::DATA_TYPE_BYTE, 1);
-			//$entity->getLevel()->getServer()->broadcastPopup(TextFormat::RED . "Mob AI isn't implemented yet!");
 			if($player->isSurvival()){
 				--$this->count;
 			}
 			$entity->spawnToAll();
+			$entity->getLevel()->getAI()->registerAI($entity);
 			return true;
 		}
 		return false;

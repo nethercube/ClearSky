@@ -45,6 +45,7 @@ use pocketmine\Server;
 use pocketmine\utils\ChunkException;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\level\ai\AI;
 
 abstract class Entity extends Location implements Metadatable{
 

@@ -139,6 +139,8 @@ use pocketmine\entity\MinecartTNT;
 use pocketmine\entity\TripoidCamera;
 use pocketmine\entity\ThrownEnderPearl;
 use pocketmine\entity\ai\AIManager;
+use pocketmine\entity\ai\SnowGolemAI;
+use pocketmine\entity\ai\WolfAI;
 
 /**
  * The class that manages everything
@@ -1703,6 +1705,7 @@ class Server{
 
 		$this->registerEntities();
 		$this->registerTiles();
+		$this->registerAIs();
 
 		InventoryType::init($this->getProperty("player.inventory.slot", 36));
 		Block::init();
@@ -2739,7 +2742,8 @@ class Server{
 	}
 
 	private function registerAIs(){
-		AIManager::registerAI(SnowGolem::class, SnowGolemAI::class);
+		#AIManager::registerAIs(SnowGolem::class, SnowGolemAI::class, $this);
+		AIManager::registerAIs(Wolf::class, WolfAI::class, $this);
 	}
 
 }

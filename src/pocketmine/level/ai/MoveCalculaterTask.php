@@ -24,12 +24,10 @@ class MoveCalculaterTask extends AsyncTask{
 		// $rs = "LevelId: ".$this->levelId." EntityId: ".$this->entityId." EntityType: ".$this->entityType;
 		$entity = $this->server->getEntity($this->entityId);
 		// AIManager::calculateMovement($entity);
-		$x = $entity->x;
-		$y = $entity->y;
-		$z = $entity->z;
-		$yaw = $entity->yaw;
-		$pitch = $entity->pitch;
-		$rs = ['id' => $this->entityId, 'x' => $x, 'y' => $y, 'z' => $z, 'yaw' => $yaw, 'pitch' => $pitch];
+		$x = $entity->x + 1;
+		$y = $entity->y + 1;
+		$z = $entity->z + 1;
+		$rs = ['id' => $this->entityId, 'x' => $x, 'y' => $y, 'z' => $z];
 		$this->setResult($rs, false);
 	}
 
