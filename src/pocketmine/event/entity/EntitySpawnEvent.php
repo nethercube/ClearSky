@@ -7,6 +7,7 @@ use pocketmine\entity\Human;
 use pocketmine\entity\Item;
 use pocketmine\entity\Projectile;
 use pocketmine\entity\Vehicle;
+use pocketmine\entity\Wolf;
 
 /**
  * Called when a entity is spawned

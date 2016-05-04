@@ -57,7 +57,6 @@ class SpawnEgg extends Item{
 				--$this->count;
 			}
 			$entity->spawnToAll();
-			$entity->getLevel()->getAI()->registerAI($entity);
 			return true;
 		}
 		return false;

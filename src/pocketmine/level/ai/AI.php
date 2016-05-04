@@ -25,6 +25,7 @@ class AI{
 
 	public function registerAI(Entity $entity){
 		$this->mobs[$entity->getId()] = $entity->getName();
+		$this->getServer()->broadcastMessage("AI ticking for ".$entity->getName().": ".$entity->getId());
 	}
 
 	public function unregisterAI(Entity $entity){
@@ -32,9 +33,8 @@ class AI{
 	}
 
 	public function tickMobs(){
-		// print_r($this->getLevel()->getChunks());
 		foreach($this->mobs as $mobId => $mobType){
-			$this->getServer()->getScheduler()->scheduleAsyncTask(new MoveCalculaterTask($this->level, $this->levelId, $mobId, $mobType));
+			$this->getServer()->getScheduler()->scheduleAsyncTask(new MoveCalculaterTask($this->getLevel(), $this->levelId, $mobId, $mobType));
 		}
 		// echo "Level ".$this->getLevel()->getName()." Receive Tick Request\n";
 	}
