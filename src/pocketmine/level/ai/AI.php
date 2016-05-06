@@ -4,6 +4,8 @@ namespace pocketmine\level\ai;
 
 use pocketmine\level\Level;
 use pocketmine\entity\Entity;
+use pocketmine\network\protocol\MoveEntityPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
 
 class AI{
 	private $level;
@@ -36,28 +38,11 @@ class AI{
 		foreach($this->mobs as $mobId => $mobType){
 			$this->getServer()->getScheduler()->scheduleAsyncTask(new MoveCalculaterTask($this->getLevel(), $this->levelId, $mobId, $mobType));
 		}
-		// echo "Level ".$this->getLevel()->getName()." Receive Tick Request\n";
 	}
 
 	public function moveCalculationCallback($result){
 		$entity = $this->getServer()->getLevel($this->levelId)->getEntity($result['id']);
-		$pos = $entity->temporalVector->setComponents($result['x'], $result['y']);
-		$entity->setPosition($pos);
-		
-		$pk = new MoveEntityPacket();
-		$pk->eid = $entity->getId();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$pk->yaw = $entity->yaw;
-		$pk->headYaw = $entity->yaw;
-		$pk->pitch = $entity->pitch;
-		$entity->getLevel()->getPlayers()->batchDataPacket($pk);
-		
-		$pk = new SetEntityMotionPacket();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$entity->getLevel()->getPlayers()->batchDataPacket($pk);
+		$pos = $entity->temporalVector->setComponents($result['x'], $result['y'], $result['z']);
+		$this->getServer()->broadcastMessage($pos->__toString());
 	}
 }
