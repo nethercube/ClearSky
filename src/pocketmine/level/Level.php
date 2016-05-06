@@ -866,6 +866,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
+		$this->AI->tickMobs();
 		Timings::$tickTileEntityTimer->stopTiming();
 		$this->timings->tileEntityTick->stopTiming();
 
@@ -930,8 +931,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkPackets = [];
 		
 		$this->generateWeather();
-
-		$this->AI->tickMobs();
 		
 		$this->timings->doTick->stopTiming();
 	}
