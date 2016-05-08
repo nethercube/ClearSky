@@ -2429,7 +2429,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 								"Rotation" => new Enum("Rotation", [
 									new Float("", $this->yaw),
 									new Float("", $this->pitch)
-								])
+								]),
+								"UUIDMost" => new Long("", $this->getUniqueId()),
+								"UUIDMost" => new Long("", $this->getUniqueId() - 1),
+								"UUID" => new Long("", $this->getUniqueId())
 							]);
 							$fishingHook = new FishingHook($this->chunk, $nbt, $this);
 							$this->server->getPluginManager()->callEvent($fish = new EntityLaunchFishingRodEvent($this, $item, $fishingHook, $f));

@@ -21,6 +21,7 @@ class FishingHook extends Projectile{
 	public $attractTimer = 100;
 	public $coughtTimer = 0;
 	public $damageRod = false;
+	private $owner = null;
 
 	public function initEntity(){
 		parent::initEntity();
@@ -34,6 +35,7 @@ class FishingHook extends Projectile{
 
 	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
 		parent::__construct($chunk, $nbt, $shootingEntity);
+		$this->owner = $shootingEntity;
 	}
 
 	public function setData($id){
